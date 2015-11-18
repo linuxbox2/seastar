@@ -23,8 +23,7 @@
 #ifndef IP_HH_
 #define IP_HH_
 
-#include <boost/asio/ip/address_v4.hpp>
-#include <boost/asio/ip/address_v6.hpp>
+#include <boost/asio/ip/address.hpp> // includes address_v6
 #include <arpa/inet.h>
 #include <unordered_map>
 #include <cstdint>
@@ -84,7 +83,37 @@ static inline bool is_unspecified(ipv4_address addr) { return addr.ip == 0; }
 
 std::ostream& operator<<(std::ostream& os, ipv4_address a);
 
-}
+/* v6 */
+struct ipv6_address {
+#if 0 // XXXX
+    ipv6_address() : ip(0) {}
+    explicit ipv6_address(uint32_t ip) : ip(ip) {}
+    explicit ipv6_address(const std::string& addr) {
+        ip = static_cast<uint32_t>(boost::asio::ip::address_v4::from_string(addr).to_ulong());
+    }
+    ipv6_address(ipv6_addr addr) {
+        ip = addr.ip;
+    }
+#endif
+    packed<boost::asio::detail::in6_addr_type> ip;
+#if 0 // XXX
+    template <typename Adjuster>
+    auto adjust_endianness(Adjuster a) { return a(ip); }
+
+    friend bool operator==(ipv4_address x, ipv4_address y) {
+        return x.ip == y.ip;
+    }
+    friend bool operator!=(ipv4_address x, ipv4_address y) {
+        return x.ip != y.ip;
+    }
+#endif
+} __attribute__((packed));
+#if 0 // XXX
+static inline bool is_unspecified(ipv4_address addr) { return addr.ip == 0; }
+
+std::ostream& operator<<(std::ostream& os, ipv4_address a);
+#endif
+} /* namespace net */
 
 namespace std {
 
