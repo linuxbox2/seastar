@@ -24,6 +24,7 @@
 #define IP_HH_
 
 #include <boost/asio/ip/address_v4.hpp>
+#include <boost/asio/ip/address_v6.hpp>
 #include <arpa/inet.h>
 #include <unordered_map>
 #include <cstdint>
@@ -47,6 +48,11 @@ class ipv4;
 template <ip_protocol_num ProtoNum>
 class ipv4_l4;
 struct ipv4_address;
+
+class ipv6;
+template <ip_protocol_num ProtoNum>
+class ipv6_l4; // XXX l4?
+struct ipv6_address;
 
 template <typename InetTraits>
 class tcp;
