@@ -95,6 +95,8 @@ struct ipv6_addr {
     ipv6_addr(socket_address &&sa) : ipv6_addr(sa) {}
 };
 
+static in6_addr_type in6_zero = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+
 struct ipv4_addr {
     uint32_t ip;
     uint16_t port;
@@ -119,7 +121,17 @@ bool is_ip_unspecified(ipv4_addr &addr) {
 }
 
 static inline
+bool is_ip_unspecified(ipv6_addr &addr) {
+    return (memcmp(&addr.ip, &in6_zero, sizeof(in6_addr_type)) == 0);
+}
+
+static inline
 bool is_port_unspecified(ipv4_addr &addr) {
+    return addr.port == 0;
+}
+
+static inline
+bool is_port_unspecified(ipv6_addr &addr) {
     return addr.port == 0;
 }
 
