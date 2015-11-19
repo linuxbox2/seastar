@@ -33,6 +33,7 @@
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <netinet/ip.h>
+#include <boost/asio/ip/address.hpp> // includes address_v6
 
 class socket_address {
 public:
@@ -40,6 +41,7 @@ public:
         ::sockaddr_storage sas;
         ::sockaddr sa;
         ::sockaddr_in in;
+	::sockaddr_in6 in6;
     } u;
     socket_address(sockaddr_in sa) {
         u.in = sa;
@@ -47,12 +49,50 @@ public:
     socket_address() = default;
     ::sockaddr& as_posix_sockaddr() { return u.sa; }
     ::sockaddr_in& as_posix_sockaddr_in() { return u.in; }
+    ::sockaddr_in6& as_posix_sockaddr_in6() { return u.in6; }
     const ::sockaddr& as_posix_sockaddr() const { return u.sa; }
     const ::sockaddr_in& as_posix_sockaddr_in() const { return u.in; }
+    const ::sockaddr_in6& as_posix_sockaddr_in6() const { return u.in6; }
 };
 
 struct listen_options {
     bool reuse_address = false;
+};
+
+// XXX too many address wrapper types
+using in6_addr_type =  boost::asio::detail::in6_addr_type;
+
+struct ipv6_addr {
+    in6_addr_type ip;
+    uint16_t port;
+
+    ipv6_addr() : ip(), port(0) {}
+    ipv6_addr(in6_addr_type ip, uint16_t port) : ip(ip), port(port) {}
+    ipv6_addr(uint16_t port) : ip(), port(port) {}
+    ipv6_addr(const std::string &addr);
+    ipv6_addr(const std::string &addr, uint16_t port);
+
+    ipv6_addr(const socket_address &sa) {
+    	ip = { 	net::ntoh(sa.u.in6.sin6_addr.s6_addr[0]),
+		net::ntoh(sa.u.in6.sin6_addr.s6_addr[1]),
+		net::ntoh(sa.u.in6.sin6_addr.s6_addr[2]),
+		net::ntoh(sa.u.in6.sin6_addr.s6_addr[3]),
+		net::ntoh(sa.u.in6.sin6_addr.s6_addr[4]),
+		net::ntoh(sa.u.in6.sin6_addr.s6_addr[5]),
+		net::ntoh(sa.u.in6.sin6_addr.s6_addr[6]),
+		net::ntoh(sa.u.in6.sin6_addr.s6_addr[7]),
+		net::ntoh(sa.u.in6.sin6_addr.s6_addr[8]),
+		net::ntoh(sa.u.in6.sin6_addr.s6_addr[9]),
+		net::ntoh(sa.u.in6.sin6_addr.s6_addr[10]),
+		net::ntoh(sa.u.in6.sin6_addr.s6_addr[11]),
+		net::ntoh(sa.u.in6.sin6_addr.s6_addr[12]),
+		net::ntoh(sa.u.in6.sin6_addr.s6_addr[13]),
+		net::ntoh(sa.u.in6.sin6_addr.s6_addr[14]),
+		net::ntoh(sa.u.in6.sin6_addr.s6_addr[15]) };
+        port = net::ntoh(sa.u.in6.sin6_port);
+    }
+
+    ipv6_addr(socket_address &&sa) : ipv6_addr(sa) {}
 };
 
 struct ipv4_addr {

@@ -83,19 +83,21 @@ static inline bool is_unspecified(ipv4_address addr) { return addr.ip == 0; }
 
 std::ostream& operator<<(std::ostream& os, ipv4_address a);
 
+using in6_addr_type = boost::asio::detail::in6_addr_type;
+
 /* v6 */
 struct ipv6_address {
-#if 0 // XXXX
-    ipv6_address() : ip(0) {}
-    explicit ipv6_address(uint32_t ip) : ip(ip) {}
+    ipv6_address() : ip() {}
+    explicit ipv6_address(in6_addr_type ip) : ip(ip) {}
     explicit ipv6_address(const std::string& addr) {
-        ip = static_cast<uint32_t>(boost::asio::ip::address_v4::from_string(addr).to_ulong());
+	ip = boost::asio::ip::address_v6::from_string(addr).get_addr();
     }
-    ipv6_address(ipv6_addr addr) {
+#if 0
+    ipv6_address(ipv6_addr addr) { // XXX api.hh
         ip = addr.ip;
     }
 #endif
-    packed<boost::asio::detail::in6_addr_type> ip;
+    packed<in6_addr_type> ip;
 #if 0 // XXX
     template <typename Adjuster>
     auto adjust_endianness(Adjuster a) { return a(ip); }
