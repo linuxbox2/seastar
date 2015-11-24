@@ -165,6 +165,31 @@ socket_address make_ipv4_address(ipv4_addr addr) {
     return sa;
 }
 
+static inline
+socket_address make_ipv6_address(ipv6_addr addr) {
+    socket_address sa;
+    sa.u.in6.sin6_family = AF_INET6;
+    sa.u.in6.sin6_port = net::hton(addr.port);
+    auto& ip6 = sa.u.in6.sin6_addr.s6_addr;
+    ip6[0] = net::hton(addr.ip.s6_addr[0]);
+    ip6[1] = net::hton(addr.ip.s6_addr[1]);
+    ip6[2] = net::hton(addr.ip.s6_addr[2]);
+    ip6[3] = net::hton(addr.ip.s6_addr[3]);
+    ip6[4] = net::hton(addr.ip.s6_addr[4]);
+    ip6[5] = net::hton(addr.ip.s6_addr[5]);
+    ip6[6] = net::hton(addr.ip.s6_addr[6]);
+    ip6[7] = net::hton(addr.ip.s6_addr[7]);
+    ip6[8] = net::hton(addr.ip.s6_addr[8]);
+    ip6[9] = net::hton(addr.ip.s6_addr[9]);
+    ip6[10] = net::hton(addr.ip.s6_addr[10]);
+    ip6[11] = net::hton(addr.ip.s6_addr[11]);
+    ip6[12] = net::hton(addr.ip.s6_addr[12]);
+    ip6[13] = net::hton(addr.ip.s6_addr[13]);
+    ip6[14] = net::hton(addr.ip.s6_addr[14]);
+    ip6[15] = net::hton(addr.ip.s6_addr[15]);
+    return sa;
+}
+
 namespace net {
 
 class udp_datagram_impl {
