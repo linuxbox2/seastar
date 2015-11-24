@@ -92,23 +92,21 @@ struct ipv6_address {
     explicit ipv6_address(const std::string& addr) {
 	ip = boost::asio::ip::address_v6::from_string(addr).get_addr();
     }
-#if 0
     ipv6_address(ipv6_addr addr) { // XXX api.hh
         ip = addr.ip;
     }
-#endif
     packed<in6_addr_type> ip;
 #if 0 // XXX
     template <typename Adjuster>
     auto adjust_endianness(Adjuster a) { return a(ip); }
-
-    friend bool operator==(ipv4_address x, ipv4_address y) {
-        return x.ip == y.ip;
-    }
-    friend bool operator!=(ipv4_address x, ipv4_address y) {
-        return x.ip != y.ip;
-    }
 #endif
+    friend bool operator==(ipv6_address x, ipv6_address y) {
+	return (memcmp(&x.ip, &y.ip, sizeof(packed<in6_addr_type>)) == 0);
+    }
+
+    friend bool operator!=(ipv6_address x, ipv6_address y) {
+	return !(x == y);
+    }
 } __attribute__((packed));
 #if 0 // XXX
 static inline bool is_unspecified(ipv4_address addr) { return addr.ip == 0; }
