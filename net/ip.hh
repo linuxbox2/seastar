@@ -79,6 +79,7 @@ struct ipv4_address {
     }
 } __attribute__((packed));
 
+// XXX api.hh?
 static inline bool is_unspecified(ipv4_address addr) { return addr.ip == 0; }
 
 std::ostream& operator<<(std::ostream& os, ipv4_address a);
@@ -96,10 +97,11 @@ struct ipv6_address {
         ip = addr.ip;
     }
     packed<in6_addr_type> ip;
-#if 0 // XXX
+
+	// XXX
     template <typename Adjuster>
     auto adjust_endianness(Adjuster a) { return a(ip); }
-#endif
+
     friend bool operator==(ipv6_address x, ipv6_address y) {
 	return (memcmp(&x.ip, &y.ip, sizeof(packed<in6_addr_type>)) == 0);
     }
@@ -108,11 +110,9 @@ struct ipv6_address {
 	return !(x == y);
     }
 } __attribute__((packed));
-#if 0 // XXX
-static inline bool is_unspecified(ipv4_address addr) { return addr.ip == 0; }
 
-std::ostream& operator<<(std::ostream& os, ipv4_address a);
-#endif
+	std::ostream& operator<<(std::ostream& os, ipv6_address addr);
+
 } /* namespace net */
 
 namespace std {
