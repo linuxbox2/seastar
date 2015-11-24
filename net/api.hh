@@ -145,6 +145,17 @@ std::ostream& operator<<(std::ostream &os, ipv4_addr addr) {
     return os << ":" << addr.port;
 }
 
+using address_v6 = boost::asio::ip::address_v6;
+
+static inline
+std::ostream& operator<<(std::ostream &os, ipv6_addr addr) {
+	address_v6::bytes_type b;
+	for (int ix = 0; ix < 16; ++ix)
+		b[ix] = addr.ip.s6_addr[ix];
+	address_v6 v6{b};
+	return os << v6 << ":" << addr.port;
+}
+
 static inline
 socket_address make_ipv4_address(ipv4_addr addr) {
     socket_address sa;
